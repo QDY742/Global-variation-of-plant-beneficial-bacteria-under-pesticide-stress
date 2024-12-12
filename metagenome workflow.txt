@@ -3,13 +3,32 @@ gunzip -c -d "path/xxx__1.fastq.gz" >xxx__1.fastq
 /path/reads_qc.py -i
 fq.list -o test_result -t 16
 
-metawrap assembly -1
-/path/E
-RR2762106_1.fastq -2
-/path/E
-RR2762106_2.fastq -m 1000 -t 100 --megahit -o
-/path/assembly_Metagenome/assem
-bly_redult
+#!/bin/bash
+
+
+megahit \
+  -1 read1.fastq \
+  -2 read2.fastq \
+  -o megahit_output \
+  --presets meta-large \
+  --min-contig-len 1000
+
+
+jgi_summarize_bam_contig_depths \
+  --outputDepth depth.txt \
+  alignment.bam
+
+
+bwa index megahit_output/final.contigs.fa
+bwa mem -t 16 megahit_output/final.contigs.fa read1.fastq read2.fastq | samtools view -bS - | samtools sort -o alignment.bam
+samtools index alignment.bam
+
+
+metabat2 \
+  -i megahit_output/final.contigs.fa \
+  -a depth.txt \
+  -o bins/bin
+
 
 export PATH=$PATH:/path/metabat2/metabat
 export PATH=$PATH:/path/maxbin2/MaxBin-2.2.7/src:/path/maxbin2/MaxBin-2.2.7
