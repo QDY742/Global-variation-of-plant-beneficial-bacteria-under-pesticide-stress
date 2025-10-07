@@ -1,0 +1,56 @@
+library(ggplot2)
+library(ggmap)
+library(sp)
+library(maptools)
+library(maps)
+library(mapdata)
+
+# Load data
+mydata <- read.csv("Beneficial_abundance.csv", header = TRUE)
+
+# Extract longitude, latitude, and RPKM
+visit.x <- as.numeric(mydata$longitude)
+visit.y <- as.numeric(mydata$latitude)
+rpkm <- mydata$RPKM
+Groups <- mydata$Group
+
+# Define a color palette for Groups
+group_colors <- c("#008866","#BEBADA","#4169B2","#003377")
+
+# Plotting
+mp <- ggplot() +
+  borders("world", colour = "gray50", fill = "white") +
+  geom_point(aes(x = visit.x, y = visit.y, color = Groups, size = rpkm), alpha = 0.9) +
+  scale_color_manual(values = group_colors, limits = c("Non-agricultural land", "Low", "Medium", "High")) +
+  scale_size(range = c(3, 10)) +
+  ggtitle("Global sampling point") +
+  theme(
+    panel.grid = element_blank(),
+    panel.background = element_rect(color = 'black', fill = 'transparent'),
+    legend.key = element_rect(fill = 'transparent'),
+    plot.title = element_text(size = 15, color = "black", hjust = 0.5)
+  ) +
+  guides(color = guide_legend(override.aes = list(size = 5)))
+
+
+print(mp)
+
+
+mp2
+mp3<-mp2+theme_bw() mp3
+
+data<-read.table("data.csv",header=TRUE,sep=",")
+visit.x<-mydata$longitude
+visit.y<-mydata$latitude 
+mp<-NULL 
+mapworld<-borders("china",colour = "gray50",fill="white")
+mapworld
+mp<-ggplot()+mapworld
+mp
+mp2<-mp+geom_point(aes(x=visit.x,y=visit.y,size=data$number),color="#8BB6D6",alpha=0.9)+scale_size(range=c(5,5))
+
+mp2
+mp3<-mp2+theme(legend.position = "none") 
+mp3
+
+

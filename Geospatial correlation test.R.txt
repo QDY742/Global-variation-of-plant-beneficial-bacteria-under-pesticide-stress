@@ -1,0 +1,62 @@
+community_data <- read.csv("pbb_abundance.csv", row.names = 1)
+
+
+geo_data <- read.csv("geo_coords.csv")  
+
+env_data <- read.csv("pesticide_risk.csv")  
+colnames(geo_data)
+colnames(env_data)
+
+colnames(geo_data)[1] <- "sample_id"
+colnames(env_data)[1] <- "sample_id"
+
+
+meta <- merge(geo_data, env_data, by = "sample_id")
+
+meta <- meta[match(rownames(community_data), meta$sample_id), ]
+
+
+library(vegan)
+
+comm_dist <- vegdist(community_data, method = "bray")
+
+library(geosphere)
+geo_dist <- distm(meta[, c("longitude", "latitude")], fun = distHaversine)
+geo_dist <- as.dist(geo_dist)
+
+
+pesticide_dist <- dist(meta$pesticide_risk)
+
+mantel(comm_dist, geo_dist, method = "pearson")
+
+mantel.partial(comm_dist, pesticide_dist, geo_dist, method = "pearson")
+
+
+library(vegan)
+
+
+comm_dist <- vegdist(community_data, method = "bray")
+
+
+coords <- meta[, c("longitude", "latitude")]
+
+
+geo_dist <- dist(coords)
+
+
+pcnm_obj <- pcnm(geo_dist)
+
+
+spatial_vars <- as.data.frame(pcnm_obj$vectors)
+
+
+env_matrix <- cbind(pesticide_risk = meta$pesticide_risk, spatial_vars)
+
+
+db_model <- capscale(community_data ~ pesticide_risk + ., data = env_matrix, distance = "bray")
+
+
+anova(db_model, permutations = 999)
+
+
+anova(db_model, by = "margin")

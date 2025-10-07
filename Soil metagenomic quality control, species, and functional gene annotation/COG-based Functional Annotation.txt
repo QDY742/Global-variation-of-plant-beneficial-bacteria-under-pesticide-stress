@@ -1,0 +1,27 @@
+prodigal -i contigs.fa -a contigs.faa -d contigs.fna -p meta
+
+diamond blastp \
+  -q contigs.faa \
+  -d /path/to/COG2024/cogorg24.dmnd \
+  -o COG_annotation.out \
+  -e 1e-5 \
+  -k 1 \
+  -p 32 \
+  --more-sensitive
+
+python /path/to/scripts/parse_cog_results.py \
+  --blast COG_annotation.out \
+  --map /path/to/COG2024/cog-24.cog.csv \
+  --def /path/to/COG2024/cog-24.def.tab \
+  --out COG_annotated_results.tsv
+
+python /path/to/scripts/calc_cog_abundance.py \
+  --input COG_annotated_results.tsv \
+  --output COG_abundance_table.tsv \
+  --normalize TPM
+
+Rscript /path/to/scripts/COG_diff_test.R \
+  --input COG_abundance_table.tsv \
+  --metadata sample_metadata.tsv \
+  --group_col "PesticideRiskLevel" \
+  --output COG_diff_test_results.tsv

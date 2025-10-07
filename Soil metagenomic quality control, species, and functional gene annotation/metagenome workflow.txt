@@ -1,0 +1,19 @@
+gunzip -c -d "path/xxx__1.fastq.gz" >xxx__1.fastq
+
+/path/reads_qc.py -i
+fq.list -o test_result -t 16
+
+metawrap assembly -1
+/path/E
+RR2762106_1.fastq -2
+/path/E
+RR2762106_2.fastq -m 1000 -t 100 --megahit -o
+/path/assembly_Metagenome/assem
+bly_redult
+
+export PATH=$PATH:/path/metabat2/metabat
+export PATH=$PATH:/path/maxbin2/MaxBin-2.2.7/src:/path/maxbin2/MaxBin-2.2.7
+
+metawrap binning -o output_result -t 32 -a/contig_path/contig.scaftig \--metabat2 /cleandata_path/xxx_1.fastq /cleandata_path/xxx_2.fastq
+
+diamond blastp --max-target-seqs 1 -p 100 -b12 -c1 -q contigs.faa -d kegg.dmnd -f 6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore slen qlen -o result.out --evalue 1e-5 --more-sensitive
